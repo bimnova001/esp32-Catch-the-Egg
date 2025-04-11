@@ -1,29 +1,29 @@
 #include <Wire.h>
 #include <U8g2lib.h>
 
-// OLED
+
 U8G2_SH1106_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, /* reset=*/ U8X8_PIN_NONE);
 
-// ปุ่ม
+
 const int BUTTON_LEFT = 35;
 const int BUTTON_RIGHT = 33;
 const int BUTTON_SELECT = 32;
 
-// เกม
+
 enum GameState { MENU, PLAYING };
 GameState gameState = MENU;
 
-// เมนูโหมด
+
 const char* modes[] = {"EASY", "MEDIUM", "HARD"};
 int selectedMode = 0;
 int eggSpeed = 50;
 
-// ตะกร้า
+
 int basketX = 50;
 const int basketWidth = 20;
 const int basketY = 60;
 
-// ไข่
+
 int eggX;
 int eggY = 0;
 bool eggCaught = false;
@@ -47,7 +47,6 @@ void loop() {
 }
 
 void handleMenu() {
-  // ปรับการเลือกเมนู
   if (digitalRead(BUTTON_LEFT) == LOW) {
     selectedMode = (selectedMode + 2) % 3;
     delay(200);
@@ -64,7 +63,6 @@ void handleMenu() {
     delay(200);
   }
 
-  // วาดเมนู
   u8g2.clearBuffer();
   u8g2.setFont(u8g2_font_6x12_tr);
   u8g2.setCursor(10, 15);
@@ -121,7 +119,6 @@ void handleGame() {
     basketX += 2;
   }
 
-  // ตกไข่
   eggY += 2;
   if (eggY >= basketY - 2 && eggY <= basketY + 4) {
     if (eggX >= basketX && eggX <= basketX + basketWidth) {
@@ -136,11 +133,9 @@ void handleGame() {
     eggCaught = false;
   }
 
-  // วาดเกม
   u8g2.clearBuffer();
-  u8g2.drawDisc(eggX, eggY, 2); // ไข่
-  u8g2.drawBox(basketX, basketY, basketWidth, 4); // ตะกร้า
-
+  u8g2.drawDisc(eggX, eggY, 2); 
+  u8g2.drawBox(basketX, basketY, basketWidth, 4); 
   u8g2.setFont(u8g2_font_5x8_tr);
   u8g2.setCursor(0, 10);
   u8g2.print("Score: ");
