@@ -119,9 +119,6 @@ project/
 
 <hr>
 
-<h2>❤️ Credits</h2>
-<p>Made with ❤️ for learning and retro game fun!<br>
-By: <strong>Your Name</strong> (Feel free to personalize this)</p>
 
 </body>
 </html>
