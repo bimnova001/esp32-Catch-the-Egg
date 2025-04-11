@@ -2,50 +2,6 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <style>
-    body {
-      font-family: "Segoe UI", sans-serif;
-      background-color: #f8f9fa;
-      color: #212529;
-      padding: 2rem;
-      line-height: 1.6;
-    }
-    h1, h2, h3 {
-      color: #007acc;
-    }
-    code {
-      background: #eee;
-      padding: 2px 5px;
-      border-radius: 4px;
-    }
-    pre {
-      background: #f1f1f1;
-      padding: 10px;
-      border-left: 5px solid #007acc;
-      overflow-x: auto;
-    }
-    table {
-      border-collapse: collapse;
-      width: 100%;
-      margin-top: 1rem;
-    }
-    th, td {
-      padding: 10px;
-      border: 1px solid #ccc;
-      text-align: center;
-    }
-    ul {
-      padding-left: 1.2rem;
-    }
-    .badge {
-      background: #007acc;
-      color: white;
-      padding: 4px 8px;
-      border-radius: 5px;
-      font-size: 0.8rem;
-      margin-left: 5px;
-    }
-  </style>
 </head>
 <body>
 
