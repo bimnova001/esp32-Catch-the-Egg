@@ -1,3 +1,7 @@
+// if you read this. Um can you make my game better ? 
+
+
+
 #include <Wire.h>
 #include <U8g2lib.h>
 
@@ -10,37 +14,76 @@ const int BUTTON_RIGHT = 33;
 const int BUTTON_SELECT = 32;
 
 
-enum GameState { MENU, PLAYING };
+enum GameState { MENU, PLAYING, github };
 GameState gameState = MENU;
 
 unsigned long leftRightHoldStart = 0;
+
+unsigned long gameStartTime;
 bool specialModeMenuActive = false;
+bool timerEnabled = false;
 
 const char* modes[] = {"EASY", "MEDIUM", "HARD"};
-int selectedMode = 0;
-int eggSpeed = 50;
 
-int basketX = 50;
 const int basketWidth = 20;
 const int basketY = 60;
-
-bool timerEnabled = false;
-unsigned long gameStartTime;
 const int gameDuration = 30000;
 
 int minScore = 5;
-
+int selectedMode = 0;
+int eggSpeed = 50;
+int basketX = 50;
 int eggX;
 int eggY = 0;
 bool eggCaught = false;
 int score = 0;
+
+
+
+
+
 
 enum SpecialMode {
   NONE,
   SUPER_HARD_MODE,
   ULTIMATE_MODE
 };
+
 SpecialMode currentMode = NONE;
+
+
+
+void githubshow() {
+  String link = "https://github.com/bimnova001/esp32-Catch-the-Egg";
+  int y = -8; 
+  u8g2.setFont(u8g2_font_5x8_tr);
+
+  while (true) {
+    u8g2.clearBuffer();
+    u8g2.drawFrame(0, 0, 128, 64); 
+    u8g2.setFont(u8g2_font_6x10_tr);
+    u8g2.drawStr(40, 10, "GitHub");
+    u8g2.setFont(u8g2_font_5x8_tr);
+    u8g2.drawStr(5, y, link.c_str()); 
+    u8g2.drawStr(10, 60, "Press SELECT to exit"); 
+    u8g2.sendBuffer();
+
+    delay(100);
+    y++; 
+
+    if (y > 64) {
+      y = -8; 
+    }
+
+    
+    if (digitalRead(BUTTON_SELECT) == LOW) {
+      delay(200); 
+      gameState = MENU; 
+      return;
+    }
+  }
+}
+
 
 void showSpecialModeMenu() {
   int selected = 0;
@@ -103,7 +146,6 @@ void setup() {
 void loop() {
   bool leftPressed = digitalRead(BUTTON_LEFT) == LOW;
   bool rightPressed = digitalRead(BUTTON_RIGHT) == LOW;
-
   if (leftPressed && rightPressed) {
     if (leftRightHoldStart == 0) {
       leftRightHoldStart = millis();
@@ -111,7 +153,7 @@ void loop() {
       specialModeMenuActive = true;
       showSpecialModeMenu();
       leftRightHoldStart = 0;
-    }
+    } 
   } else {
     leftRightHoldStart = 0;
   }
@@ -120,23 +162,33 @@ void loop() {
     handleMenu();
   } else if (gameState == PLAYING) {
     handleGame();
+  } else if (gameState == github) {
+    githubshow();
   }
 }
 
 void handleMenu() {
   if (digitalRead(BUTTON_LEFT) == LOW) {
-    selectedMode = (selectedMode + 2) % 3;
+    selectedMode = (selectedMode + 3 - 1) % 4; 
     delay(200);
   }
   if (digitalRead(BUTTON_RIGHT) == LOW) {
-    selectedMode = (selectedMode + 1) % 3;
+    selectedMode = (selectedMode + 1) % 4; 
     delay(200);
   }
   if (digitalRead(BUTTON_SELECT) == LOW) {
-    if (selectedMode == 0) eggSpeed = 100;
-    else if (selectedMode == 1) eggSpeed = 50;
-    else eggSpeed = 30;
-    askEnableTimer();
+    if (selectedMode == 0) {
+      eggSpeed = 100;
+      askEnableTimer();
+    } else if (selectedMode == 1) {
+      eggSpeed = 50;
+      askEnableTimer();
+    } else if (selectedMode == 2) {
+      eggSpeed = 30;
+      askEnableTimer();
+    } else if (selectedMode == 3) {
+      gameState = github; 
+    }
     delay(200);
   }
 
@@ -148,16 +200,23 @@ void handleMenu() {
   u8g2.setCursor(22, 35);
   u8g2.print("Difficulty:");
   u8g2.setFont(u8g2_font_7x14B_tr);
-  String displayMode = String("> ") + modes[selectedMode] + " <";
+
+  
+  String displayMode;
+  if (selectedMode == 0) displayMode = "> EASY <";
+  else if (selectedMode == 1) displayMode = "> MEDIUM <";
+  else if (selectedMode == 2) displayMode = "> HARD <";
+  else if (selectedMode == 3) displayMode = "> GITHUB <";
+
   int textWidth = u8g2.getStrWidth(displayMode.c_str());
   u8g2.setCursor((128 - textWidth) / 2, 52);
   u8g2.print(displayMode);
+
   u8g2.setFont(u8g2_font_4x6_tr);
   u8g2.setCursor(8, 62);
   u8g2.print("Hold LEFT + RIGHT 3s for special mode");
   u8g2.sendBuffer();
 }
-
 void askEnableTimer() {
   bool choosing = true;
   bool choice = false;
@@ -219,6 +278,10 @@ void handleGame() {
         showGameOverScreen();
         gameState = MENU;
         started = false;
+        return;
+      } else {
+        // If score meets the minimum requirement, end the game and return to menu
+        showGameOverScreen();
         return;
       }
     }
